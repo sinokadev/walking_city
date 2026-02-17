@@ -59,31 +59,49 @@ public:
     // render the mesh
     void Draw(Shader &shader) 
     {
+        GLuint whiteTexture;
+        glGenTextures(1, &whiteTexture);
+        glBindTexture(GL_TEXTURE_2D, whiteTexture);
+
+        unsigned char whitePixel[3] = { 255, 255, 255 }; // RGB 흰색
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel);
+
+        // 텍스처 필터링 설정
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
         // bind appropriate textures
         unsigned int diffuseNr  = 1;
         unsigned int specularNr = 1;
         unsigned int normalNr   = 1;
         unsigned int heightNr   = 1;
-        for(unsigned int i = 0; i < textures.size(); i++)
-        {
-            glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-            // retrieve texture number (the N in diffuse_textureN)
-            string number;
-            string name = textures[i].type;
-            if(name == "texture_diffuse")
-                number = std::to_string(diffuseNr++);
-            else if(name == "texture_specular")
-                number = std::to_string(specularNr++); // transfer unsigned int to string
-            else if(name == "texture_normal")
-                number = std::to_string(normalNr++); // transfer unsigned int to string
-             else if(name == "texture_height")
-                number = std::to_string(heightNr++); // transfer unsigned int to string
+        if(textures.size() == 0) {
+            // 텍스처가 없으면 흰색 1x1 텍스처를 바인딩
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, whiteTexture);
+            glUniform1i(glGetUniformLocation(shader.ID, "material.diffuse"), 0);
+            glUniform1i(glGetUniformLocation(shader.ID, "material.specular"), 0); // 필요시
+        } else {
+            unsigned int diffuseNr = 1;
+            unsigned int specularNr = 1;
+            for(unsigned int i = 0; i < textures.size(); i++)
+            {
+                glActiveTexture(GL_TEXTURE0 + i); 
+                std::string number;
+                std::string name = textures[i].type;
+                if(name == "texture_diffuse")
+                    number = std::to_string(diffuseNr++);
+                else if(name == "texture_specular")
+                    number = std::to_string(specularNr++);
 
-            // now set the sampler to the correct texture unit
-            glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            // and finally bind the texture
-            glBindTexture(GL_TEXTURE_2D, textures[i].id);
+                glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+                glBindTexture(GL_TEXTURE_2D, textures[i].id);
+            }
         }
+
         
         // draw mesh
         glBindVertexArray(VAO);
