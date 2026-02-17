@@ -1,0 +1,4 @@
+/Users/newkin/walking_city/build/CMakeFiles/glad.dir
+/Users/newkin/walking_city/build/CMakeFiles/walking_city.dir
+/Users/newkin/walking_city/build/CMakeFiles/edit_cache.dir
+/Users/newkin/walking_city/build/CMakeFiles/rebuild_cache.dir
