@@ -197,7 +197,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glm::vec3 lightPos = glm::vec3(5.0f, 1.0f, 1.0f);
+    glm::vec3 lightPos = glm::vec3(2.0f, 3.0f, 1.0f);
 
     // Main loop
     while(!glfwWindowShouldClose(window))
@@ -228,6 +228,8 @@ int main()
         shader.setUniform("lightPos", lightPos); 
         shader.setUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         shader.setUniform("objectColor", glm::vec3(52.0f/255.0f, 171.0f/255.0f, 235.0f/255.0f));
+        shader.setUniform("viewPos", camera.Position); 
+
 
         glm::mat4 model = glm::mat4(1.0f);
         
